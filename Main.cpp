@@ -192,6 +192,42 @@ void pileToFoundation(pile* pile, foundation* foundations){
 				cout<<	"not any of them\n";
 			}
 }
+bool colorRule(string s1, string s2){
+	if( ((s1[0]=='C' || s1[0]=='S') && (s2[0]=='H' || s2[0]=='D')) 
+	||	((s1[0]=='H' || s1[0]=='D') && (s2[0]=='C' || s2[0]=='S'))	) {
+		return true;
+	}
+}
+
+bool magnitudeRule(string s1, string s2){//magnitude s1<s2 
+	if(indexOf(s1)<indexOf(s2)){return true;}
+}
+
+void pileToPile(pile* pile1, pile* pile2, int endingIndex){
+	int startingIndex=pile1->topIndex-(endingIndex+1);
+	if(startingIndex<0 || pile1->cards[startingIndex][1]=="0"){
+		cout<<"You cant move empty piles element\n";
+	}
+	else if(indexOf(pile1->cards[startingIndex][0])==12 && pile2->topIndex==0){//You can add any King card to any empty pile
+		for(int i=0;i<=endingIndex;i++){
+			pile2->cards[pile2->topIndex][0]=pile1->cards[startingIndex+i][0];
+			pile2->cards[pile2->topIndex][1]="1";
+			pile2->topIndex++;
+			pile1->cards[startingIndex+i][0]="";
+			pile1->topIndex--;
+		}
+	}
+	else if(colorRule(pile1->cards[startingIndex][0],pile2->cards[pile2->topIndex-1][0]) &&
+			magnitudeRule(pile1->cards[startingIndex][0],pile2->cards[pile2->topIndex-1][0])){
+				for(int i=0;i<=endingIndex;i++){
+					pile2->cards[pile2->topIndex][0]=pile1->cards[startingIndex+i][0];
+					pile2->cards[pile2->topIndex][1]="1";
+					pile2->topIndex++;
+					pile1->cards[startingIndex+i][0]="";
+					pile1->topIndex--;
+				}		
+			}
+}
 
 class waste{
 	public:
@@ -262,21 +298,7 @@ void displayTable(pile* piles,waste waste,foundation foundations){
 	foundations.displayFoundations();
 	cout<<endl<<endl;
 	piles[0].displayPiles(piles);
-	/*for(int i = 0;i<piles->pilesMaxLayerNumber(piles);i++){
-		for(int j =0;j<7;j++){
-			if(piles[j].cards[i][1]=="1"){
-				cout<<piles[j].cards[i][0]<<"   ";
-			}
-			else if(piles[j].cards[i][0]!=""){
-				cout<<"@@@   ";
-			}
-			else{
-				cout<<"      ";
-			}
-		}
-		cout<<endl;
-	}*/
-	
+
 }
 
 int main(){
@@ -287,7 +309,7 @@ int main(){
 	waste waste;
 	string command;
 	string tempCard;
-	int tempIndex;
+	int tempIndex,tempIndex2,tempIndex3;
 
 	readDeck("deck.txt",deck);
 	setTable(deck, piles, stock);
@@ -301,7 +323,6 @@ int main(){
         exit(1); // terminate with error
     }
     
-    cout<<indexOf("H11");
 	for( command; getline( commandFile, command ); ){
 
 		cout<<"\n"<<command<<endl;
@@ -316,7 +337,10 @@ int main(){
 			piles->openPile(&piles[tempIndex]);
 		}
 		else if(strCompare(command,"move p",6)){
-    		cout<<"bruh i moved pile";
+    		tempIndex=(int)command[10] - 48;
+    		tempIndex2=(int)command[12] - 48;
+    		tempIndex3=(int)command[14] - 48;
+			pileToPile(&piles[tempIndex], &piles[tempIndex3], tempIndex2);
 		}
 		else if(strCompare(command,"move to foundation w",20)){ //
 		//	foundations.moveToFoundation(piles[stoi(command[24)]].cards[piles[stoi(command[24])].topIndex], foundations)
@@ -324,14 +348,6 @@ int main(){
 		else if(strCompare(command,"move to foundation p",20)){ //
 			tempIndex=(int)command[24] - 48;
 			pileToFoundation(&piles[tempIndex], &foundations);
-		
-		//	if(pileToFoundation(piles[tempIndex], foundations)){
-			//	piles[tempIndex].cards[topIndex]="";
-			//	piles[tempIndex].topIndex--;
-			//}
-			//cout<<"TEMP INDEXCHECK THIS "<<piles[tempIndex].topIndex<<endl;
-		//	tempCard=piles[tempIndex].cards[piles[tempIndex].topIndex];
-		//cout<<foundations[0].moveToFoundation(tempCard , foundations);
 		}
 		else if(strCompare(command,"move w",6)){ //
 			cout<<"WASTE move";
@@ -342,14 +358,11 @@ int main(){
 		}
 		
     	displayTable(piles, waste,foundations);
+    	
+    	if(magnitudeRule("H10","C05")){
+    	cout<<"ASDVDSVDA";	
+		}
 	}
-	
-//	cout<<"asdgadga  |"<<piles[0].cards[0][0];
-	
-//	pileToFoundation(piles[6],foundations);
-//	cout<<"asdgadga  |"<<piles[6].cards[6][0];
-	
-	
-	
+		
 	return 0;
 }
