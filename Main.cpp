@@ -5,6 +5,7 @@
 #include<cstdlib>
 using namespace std;
 bool strCompare(string s1, string s2,int compareLength){
+	if(compareLength>s1.length() || compareLength>s2.length()){return false;}
 	for(int i=0;i<compareLength;i++){
 		if(s1[i]!=s2[i]){
 			return false;
@@ -92,6 +93,19 @@ class pile{
 			}
 			return max;
 		}
+		void openPile(pile* pile){
+			if(pile->topIndex==0){
+				cout<<"Error, you cant open anything!";
+			}
+			else if(pile->cards[pile->topIndex-1][1]=="1"){
+				cout<<"Error, you cant open anything!";
+			}
+			else{
+				pile->cards[pile->topIndex-1][1]="1";
+			}
+			
+			
+		}
 		
 		void displayPiles(pile* piles){
 			int maxTopIndex=1;
@@ -121,20 +135,20 @@ class foundation{
 		int topIndex1=0;
 		int topIndex2=0;
 		int topIndex3=0;
-		void getPile0(string card, foundation foundations){
-			foundations.cards[0][topIndex0]=card;
+		void getPile0(string card, foundation* foundations){
+			foundations->cards[0][topIndex0]=card;
 			topIndex0++;
 		}
-		void getPile1(string card, foundation foundations){
-			foundations.cards[1][topIndex1]=card;
+		void getPile1(string card, foundation* foundations){
+			foundations->cards[1][topIndex1]=card;
 			topIndex1++;
 		}
-		void getPile2(string card, foundation foundations){
-			foundations.cards[2][topIndex2]=card;
+		void getPile2(string card, foundation* foundations){
+			foundations->cards[2][topIndex2]=card;
 			topIndex2++;
 		}
-		void getPile3(string card, foundation foundations){
-			foundations.cards[3][topIndex3]=card;
+		void getPile3(string card, foundation* foundations){
+			foundations->cards[3][topIndex3]=card;
 			topIndex3++;
 		}
 		void displayFoundations(){
@@ -152,27 +166,27 @@ class foundation{
 			
 			if(topIndex3!=0){
 				cout<<cards[3][topIndex3-1]<<" ";
-			}else{cout<<"___ ";}
-			
+			}else{cout<<"___ ";}	
 		}
+	
 };
 
-void pileToFoundation(pile pile, foundation foundations){
-			if(pile.cards[pile.topIndex-1][0][0]=='H' && indexOf(pile.cards[pile.topIndex-1][0]) == foundations.topIndex0){
-				foundations.getPile0(pile.cards[pile.topIndex-1][0], foundations);
-				pile.deleteTopmost();
+void pileToFoundation(pile* pile, foundation* foundations){
+			if(pile->cards[pile->topIndex-1][0][0]=='H' && indexOf(pile->cards[pile->topIndex-1][0]) == foundations->topIndex0){
+				foundations->getPile0(pile->cards[pile->topIndex-1][0], foundations);
+				pile->deleteTopmost();
 			}
-			else if(pile.cards[pile.topIndex-1][0][0] =='D' && indexOf(pile.cards[pile.topIndex-1][0]) == foundations.topIndex1){
-				foundations.getPile1(pile.cards[pile.topIndex-1][0], foundations );
-				pile.deleteTopmost();
+			else if(pile->cards[pile->topIndex-1][0][0] =='D' && indexOf(pile->cards[pile->topIndex-1][0]) == foundations->topIndex1){
+				foundations->getPile1(pile->cards[pile->topIndex-1][0], foundations );
+				pile->deleteTopmost();
 			}
-			else if(pile.cards[pile.topIndex-1][0][0] =='S' && indexOf(pile.cards[pile.topIndex-1][0]) == foundations.topIndex2){
-				foundations.getPile2(pile.cards[pile.topIndex-1][0], foundations );
-				pile.deleteTopmost();
+			else if(pile->cards[pile->topIndex-1][0][0] =='S' && indexOf(pile->cards[pile->topIndex-1][0]) == foundations->topIndex2){
+				foundations->getPile2(pile->cards[pile->topIndex-1][0], foundations );
+				pile->deleteTopmost();
 			}
-			else if(pile.cards[pile.topIndex-1][0][0] =='C' && indexOf(pile.cards[pile.topIndex-1][0]) == foundations.topIndex3){
-				foundations.getPile3(pile.cards[pile.topIndex-1][0], foundations );
-				pile.deleteTopmost();
+			else if(pile->cards[pile->topIndex-1][0][0] =='C' && indexOf(pile->cards[pile->topIndex-1][0]) == foundations->topIndex3){
+				foundations->getPile3(pile->cards[pile->topIndex-1][0], foundations );
+				pile->deleteTopmost();
 			}
 			else{
 				cout<<	"not any of them\n";
@@ -273,7 +287,7 @@ int main(){
 	waste waste;
 	string command;
 	string tempCard;
-	int tempPileIndex;
+	int tempIndex;
 
 	readDeck("deck.txt",deck);
 	setTable(deck, piles, stock);
@@ -294,8 +308,12 @@ int main(){
 		cout<<endl<<"****************************************"<<endl;
 		
     	
-    	if(strCompare(command,"open",4)){ //
-			cout<<"OPEN";
+    	if(strCompare(command,"open f",6)){ //
+			cout<<"open from stock";
+		}
+    	else if(strCompare(command,"open",4)){ //
+			tempIndex=(int)command[5] - 48;
+			piles->openPile(&piles[tempIndex]);
 		}
 		else if(strCompare(command,"move p",6)){
     		cout<<"bruh i moved pile";
@@ -304,8 +322,8 @@ int main(){
 		//	foundations.moveToFoundation(piles[stoi(command[24)]].cards[piles[stoi(command[24])].topIndex], foundations)
 		}
 		else if(strCompare(command,"move to foundation p",20)){ //
-			tempPileIndex=(int)command[24] - 48;
-			pileToFoundation(piles[tempPileIndex], foundations);
+			tempIndex=(int)command[24] - 48;
+			pileToFoundation(&piles[tempIndex], &foundations);
 		
 		//	if(pileToFoundation(piles[tempIndex], foundations)){
 			//	piles[tempIndex].cards[topIndex]="";
@@ -318,9 +336,7 @@ int main(){
 		else if(strCompare(command,"move w",6)){ //
 			cout<<"WASTE move";
 		}
-		else if(strCompare(command,"open f",6)){ //
-			cout<<"open from stock";
-		}
+		
 		else if(strCompare(command,"exit",4)){ //
 			cout<<"I GOEXIT YES";
 		}
@@ -332,12 +348,7 @@ int main(){
 	
 //	pileToFoundation(piles[6],foundations);
 //	cout<<"asdgadga  |"<<piles[6].cards[6][0];
-		piles[6].deleteTopmost();
-		displayTable(piles,waste,foundations);
-		cout<<piles[6].topIndex;
-		piles[6].deleteTopmost();
-		displayTable(piles,waste,foundations);
-		cout<<piles[6].topIndex;
+	
 	
 	
 	return 0;
