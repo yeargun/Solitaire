@@ -47,18 +47,42 @@ int indexOf(string card){  //indexOf("H11")=10
 		}
 	}
 }
+bool colorRule(string s1, string s2){
+	if( ((s1[0]=='C' || s1[0]=='S') && (s2[0]=='H' || s2[0]=='D')) 
+	||	((s1[0]=='H' || s1[0]=='D') && (s2[0]=='C' || s2[0]=='S'))	) {
+		return true;
+	}
+}
+
+bool magnitudeRule(string s1, string s2){//if magnitude s1+1=s2 return true
+	if(indexOf(s1)+1==indexOf(s2)){
+	return true;}
+	else return false;
+}
 
 class stock{
 	public:
-		string cards[25]={""};
+		string cards[24]={""};
+		int topIndex=-1;
 };
-
-void wasteToFoundation(){
-}
-
-void wasteToPile(){
-	
-}
+class waste{
+	public:
+		string cards[3]={""};
+		int topIndex=-1;
+		string oldWaste[24]={""};
+		int oldWasteTopIndex=0;
+		
+		void displayWaste(){
+			for(int i = 0;i<3;i++){
+				if(cards[i]==""){
+					cout<<"___ ";
+				}
+				else{
+					cout<< cards[i]<<" ";
+				}
+			}
+		}
+};
 class pile{
 	public:
 		string cards[19][2];
@@ -81,7 +105,6 @@ class pile{
 		void deleteTopmost(){
 			cards[topIndex-1][0]="";
 			topIndex--;
-			cout<<	"ntered the deleetetopmost function tho";
 		}
 		
 		int pilesMaxLayerNumber(pile* piles){
@@ -168,8 +191,103 @@ class foundation{
 				cout<<cards[3][topIndex3-1]<<" ";
 			}else{cout<<"___ ";}	
 		}
-	
 };
+
+void wasteToFoundation(waste* waste1,foundation* foundation1, stock* stock1){
+	string topmostCard=waste1->cards[waste1->topIndex];
+	if(topmostCard[0]=='H'){
+		if(foundation1->cards[0][foundation1->topIndex0]=="" && topmostCard=="H01"){
+			foundation1->cards[0][foundation1->topIndex0] = topmostCard;
+			foundation1->topIndex0++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+		else if(magnitudeRule(foundation1->cards[0][foundation1->topIndex0],topmostCard)) {
+			foundation1->cards[0][foundation1->topIndex0] = topmostCard;
+			foundation1->topIndex0++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+	}
+	else if(topmostCard[0]=='D'){
+		if(foundation1->cards[1][foundation1->topIndex1]=="" && topmostCard=="D01"){
+			foundation1->cards[1][foundation1->topIndex1] = topmostCard;
+			foundation1->topIndex1++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+		else if(magnitudeRule(foundation1->cards[1][foundation1->topIndex1],topmostCard)) {
+			foundation1->cards[1][foundation1->topIndex1] = topmostCard;
+			foundation1->topIndex1++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+	}
+	else if(topmostCard[0]=='S'){
+		if(foundation1->cards[2][foundation1->topIndex2]=="" && topmostCard=="S01"){
+			foundation1->cards[2][foundation1->topIndex2] = topmostCard;
+			foundation1->topIndex2++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+		else if(magnitudeRule(foundation1->cards[2][foundation1->topIndex2],topmostCard)) {
+			foundation1->cards[2][foundation1->topIndex2] = topmostCard;
+			foundation1->topIndex2++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+	}
+	else if(topmostCard[0]=='C'){
+		if(foundation1->cards[3][foundation1->topIndex3]=="" && topmostCard=="C01"){
+			foundation1->cards[3][foundation1->topIndex3] = topmostCard;
+			foundation1->topIndex3++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+		else if(magnitudeRule(foundation1->cards[3][foundation1->topIndex3],topmostCard)) {
+			foundation1->cards[3][foundation1->topIndex3] = topmostCard;
+			foundation1->topIndex3++;
+			waste1->cards[waste1->topIndex]="";
+			waste1->topIndex--;
+		}
+	}
+	if(waste1->topIndex==-1 && waste1->oldWasteTopIndex!=0){
+		waste1->topIndex++;
+		waste1->cards[0]=waste1->oldWaste[waste1->oldWasteTopIndex-1];
+		waste1->oldWaste[waste1->oldWasteTopIndex-1]="";
+		waste1->oldWasteTopIndex--;
+	}
+}
+
+void wasteToPile(waste* waste1, pile* pile1, stock* stock1){
+	if(waste1->topIndex==-1){
+		cout<< "MAN WTF WASTE IS EMPTY";
+	}
+	else if(indexOf(waste1->cards[waste1->topIndex])==12 && pile1->topIndex==0){ //if King to empty pile
+		pile1->cards[pile1->topIndex][0] = waste1->cards[waste1->topIndex];
+		pile1->cards[pile1->topIndex][1]="1";
+		waste1->cards[waste1->topIndex]="";
+		waste1->topIndex--;
+		pile1->topIndex++;
+	}
+	else if(magnitudeRule(waste1->cards[waste1->topIndex], pile1->cards[pile1->topIndex-1][0]) &&
+			colorRule(waste1->cards[waste1->topIndex], pile1->cards[pile1->topIndex-1][0])){
+				pile1->cards[pile1->topIndex][0] = waste1->cards[waste1->topIndex];
+				pile1->cards[pile1->topIndex][1]="1";
+				waste1->cards[waste1->topIndex]="";
+				waste1->topIndex--;
+				pile1->topIndex++;
+	}
+	if(waste1->topIndex==-1 && waste1->oldWasteTopIndex!=0){
+		waste1->topIndex++;
+		waste1->cards[0]=waste1->oldWaste[waste1->oldWasteTopIndex-1];
+		waste1->oldWaste[waste1->oldWasteTopIndex-1]="";
+		waste1->oldWasteTopIndex--;
+	}
+}
+
+
+
 
 void pileToFoundation(pile* pile, foundation* foundations){
 			if(pile->cards[pile->topIndex-1][0][0]=='H' && indexOf(pile->cards[pile->topIndex-1][0]) == foundations->topIndex0){
@@ -192,19 +310,7 @@ void pileToFoundation(pile* pile, foundation* foundations){
 				cout<<	"not any of them\n";
 			}
 }
-bool colorRule(string s1, string s2){
-	if( ((s1[0]=='C' || s1[0]=='S') && (s2[0]=='H' || s2[0]=='D')) 
-	||	((s1[0]=='H' || s1[0]=='D') && (s2[0]=='C' || s2[0]=='S'))	) {
-		return true;
-	}
-}
 
-bool magnitudeRule(string s1, string s2){//if magnitude s1<s2 return true
-	if(indexOf(s1)<indexOf(s2)){
-	cout<<"s1-> "<<s1<<" s2::"<<s2;
-	return true;}
-	else return false;
-}
 
 void pileToPile(pile* pile1, pile* pile2, int endingIndex){
 	int startingIndex=pile1->topIndex-(endingIndex+1);
@@ -232,21 +338,7 @@ void pileToPile(pile* pile1, pile* pile2, int endingIndex){
 			}
 }
 
-class waste{
-	public:
-		string cards[3]={""};
-		
-	void displayWaste(){
-		for(int i = 0;i<3;i++){
-			if(cards[i]==""){
-				cout<<"___ ";
-			}
-			else{
-				cout<< cards[i]<<" ";
-			}
-		}
-	}
-};
+
 
 
 
@@ -268,7 +360,7 @@ void readDeck(string path, string deck[52]){
     deckFile.close();
 }
 
-void setTable(string* deck, pile* piles,stock stock){
+void setTable(string* deck, pile* piles,stock* stock){
 	int j=0;
 	int layer=0;
 	int pileNumber = 0;
@@ -286,22 +378,76 @@ void setTable(string* deck, pile* piles,stock stock){
 		}	
 		if(layer==7){
 			for(int i=0;i<24;i++){
-				stock.cards[i]=deck[i];
+				stock->cards[i]=deck[i];
 		}
-		stock.cards[24]="23";
+		stock->topIndex=23;
 		break;
 	}
 	}
 }
 
-void displayTable(pile* piles,waste waste,foundation foundations){
+void displayTable(pile* piles,waste waste,foundation foundations,stock stock){
 	//cout<<endl<<"@@@ ___ ___ ___         ___ ___ ___ ___"<<endl<<endl;
-	cout<<endl<<"@@@ "; waste.displayWaste();
+	if(stock.topIndex==-1){
+		cout<<endl<<"___ ";waste.displayWaste();
+	}
+	else{
+		cout<<endl<<"@@@ "; waste.displayWaste();
+	}
+	
 	cout<<"        ";
 	foundations.displayFoundations();
 	cout<<endl<<endl;
 	piles[0].displayPiles(piles);
 
+}
+void gatherTheStock(stock* stock1, waste* waste1){
+	int i = 0;
+	int j=0;
+	for(i = 0; i<=waste1->topIndex;i++){
+		stock1->cards[i]=waste1->cards[2-waste1->topIndex];
+		waste1->cards[2-waste1->topIndex]="";
+		stock1->topIndex++;
+	}
+	waste1->topIndex=-1;
+	for(; j<waste1->oldWasteTopIndex;j++){
+		stock1->cards[i]=waste1->oldWaste[waste1->oldWasteTopIndex-(j+1)];
+		waste1->oldWaste[waste1->oldWasteTopIndex-(j+1)]="";
+		stock1->topIndex++;
+	}
+	
+	
+	
+	
+	
+}
+
+
+void stockToWaste(stock* stock1, waste* waste1){
+	if(stock1->topIndex!=-1){
+		if(waste1->topIndex!=-1){
+			for(int i =0;i<=waste1->topIndex;i++){
+				waste1->oldWaste[waste1->oldWasteTopIndex]= waste1->cards[i];
+				waste1->oldWasteTopIndex++;
+				
+			}
+		}
+		
+		if(stock1->topIndex>=2){
+			waste1->cards[0]=stock1->cards[stock1->topIndex];
+			waste1->cards[1]=stock1->cards[stock1->topIndex-1];
+			waste1->cards[2]=stock1->cards[stock1->topIndex-2];
+			stock1->cards[stock1->topIndex]="";
+			stock1->cards[stock1->topIndex-1]="";
+			stock1->cards[stock1->topIndex-2]="";
+			stock1->topIndex-=3;
+			waste1->topIndex=2;
+		}
+	}
+	else{
+		gatherTheStock(stock1,waste1);
+	}
+	
 }
 
 int main(){
@@ -315,9 +461,9 @@ int main(){
 	int tempIndex,tempIndex2,tempIndex3;
 
 	readDeck("deck.txt",deck);
-	setTable(deck, piles, stock);
+	setTable(deck, piles, &stock);
 	
-	displayTable(piles, waste,foundations);
+	displayTable(piles, waste,foundations,stock);
 	ifstream commandFile;
 	commandFile.open("commands.txt");
 	
@@ -333,7 +479,7 @@ int main(){
 		
     	
     	if(strCompare(command,"open f",6)){ //
-			cout<<"open from stock";
+    		stockToWaste(&stock, &waste);
 		}
     	else if(strCompare(command,"open",4)){ //
 			tempIndex=(int)command[5] - 48;
@@ -346,22 +492,22 @@ int main(){
 			pileToPile(&piles[tempIndex], &piles[tempIndex3], tempIndex2);
 		}
 		else if(strCompare(command,"move to foundation w",20)){ //
-		//	foundations.moveToFoundation(piles[stoi(command[24)]].cards[piles[stoi(command[24])].topIndex], foundations)
+			wasteToFoundation(&waste, &foundations, &stock);
 		}
 		else if(strCompare(command,"move to foundation p",20)){ //
 			tempIndex=(int)command[24] - 48;
 			pileToFoundation(&piles[tempIndex], &foundations);
 		}
 		else if(strCompare(command,"move w",6)){ //
-			cout<<"WASTE move";
+			tempIndex= (int)command[11] - 48;
+			wasteToPile(&waste, &piles[tempIndex], &stock);
 		}
 		
 		else if(strCompare(command,"exit",4)){ //
 			cout<<"I GOEXIT YES";
 		}
 		
-    	displayTable(piles, waste,foundations);
-	}
-		
+    	displayTable(piles, waste,foundations,stock);
+	}		
 	return 0;
 }
