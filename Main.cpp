@@ -199,8 +199,11 @@ bool colorRule(string s1, string s2){
 	}
 }
 
-bool magnitudeRule(string s1, string s2){//magnitude s1<s2 
-	if(indexOf(s1)<indexOf(s2)){return true;}
+bool magnitudeRule(string s1, string s2){//if magnitude s1<s2 return true
+	if(indexOf(s1)<indexOf(s2)){
+	cout<<"s1-> "<<s1<<" s2::"<<s2;
+	return true;}
+	else return false;
 }
 
 void pileToPile(pile* pile1, pile* pile2, int endingIndex){
@@ -358,10 +361,6 @@ int main(){
 		}
 		
     	displayTable(piles, waste,foundations);
-    	
-    	if(magnitudeRule("H10","C05")){
-    	cout<<"ASDVDSVDA";	
-		}
 	}
 		
 	return 0;
